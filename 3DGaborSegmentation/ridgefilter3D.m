@@ -39,6 +39,12 @@
 %
 % January 2005
 
+% Modified by Ignacio Alvarez Illan%
+% Departamento de Teoria de la señal y Comunicaciones
+% Universidad de Granada, Spain
+% illan [at] ugr [dot] es
+% 2017
+
 function newim = ridgefilter3D(im, orient1, orient2, freq,filter,sze,angleInc)
 
 
