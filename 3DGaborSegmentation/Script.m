@@ -7,7 +7,7 @@ run('/home/ialvarezillan/fsu_unam_medical_imaging/Paths/setMyPathBreast.m')
 
 patientData ={'2004235_p9_ok.mat' '3141148_p8_ok_huge_tumor' '6107252_p2_ok' '3329368_p3_ok' '3027642_p4_ok_two_tumors'};
 
-for i=[17:30]
+for i=1:numel(patientData)
 load(patientData{i});
 
 % The DCE-MRI is orientated in a different way that the NME database, so a reorientation is needed first 
