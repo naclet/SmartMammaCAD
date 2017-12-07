@@ -48,7 +48,9 @@ end
         g_vect=[Gx(i) Gy(i) Gz(i)];
         M=M+g_vect*g_vect';
     end
-    
+    [~,eigval,eigvect]=eig(M);
+    [~,max_eigval]=max(eigval(:));
+    vect_orient=eigvect(:,ceil(max_eigval));
     
     end
 
