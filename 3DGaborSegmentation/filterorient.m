@@ -31,26 +31,27 @@ function [vect_orient] = ...
     Gy = imfilter(im, fy);fprintf('.')
     Gz = imfilter(im, fz);fprintf('.')
     
-    for i=1:X
-        for j=1:Y
-            for k=1:Z
-                vect_orient{i,j,k}=average_moment(Gx(i:i+sze,j:i+sze,k:k+sze),Gy(i:i+sze,j:i+sze,k:k+sze),Gz(i:i+sze,j:i+sze,k:k+sze));
+    for i=1:(X-sze)
+        for j=1:(Y-sze)
+            for k=1:(Z-sze)
+                vect_orient{i,j,k}=average_moment(Gx(i:i+sze,j:j+sze,k:k+sze),Gy(i:i+sze,j:j+sze,k:k+sze),Gz(i:i+sze,j:j+sze,k:k+sze));
             end
         end
+        fprintf('.')
     end
 end
 
     function vect_orient=average_moment(Gx,Gy,Gz)
     
     M=zeros(3);
-    
-    for i=1:9
+    ni=numel(Gx);
+    for i=1:ni
         g_vect=[Gx(i) Gy(i) Gz(i)];
         M=M+g_vect*g_vect';
     end
     [~,eigval,eigvect]=eig(M);
     [~,max_eigval]=max(eigval(:));
-    vect_orient=eigvect(:,ceil(max_eigval));
+    vect_orient=eigvect(:,ceil(sqrt(max_eigval)));
     
     end
 
