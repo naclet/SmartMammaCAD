@@ -40,7 +40,7 @@ filter = filtercreation(medfreq,k,angleInc);
 
 %Get the Edge map
 
-[ EM ] = EdgeMap3D(imgData,k,medfreq,filter,angleInc);
+[ EM_coarse ] = EdgeMap3D(imgData,k,medfreq,filter,angleInc);
 
 %%
 % Repeat until no difference bigger than tolerance is obtained
@@ -59,14 +59,14 @@ filter = filtercreation(medfreq,k,angleInc);
 % Repeat with coarser values
 
 
-k_factor = 1.4;       % Amplification factor for k
-freq_factor = 0.86;   % Amplification factor for medfreq
-
-filter = filtercreation(freq_factor*medfreq,round(k_factor*k),angleInc);
-[ EM_coarse_t ] = EdgeMap3D(EM,round(k_factor*k),freq_factor*medfreq,filter,angleInc);
-
-filter = filtercreation(freq_factor*medfreq,round(k_factor*k_factor*k),angleInc);
-[ EM_coarse ] = EdgeMap3D(EM_coarse_t,round(k_factor*k_factor*k),freq_factor*medfreq,filter,angleInc);
+% k_factor = 1.4;       % Amplification factor for k
+% freq_factor = 0.86;   % Amplification factor for medfreq
+% 
+% filter = filtercreation(freq_factor*medfreq,round(k_factor*k),angleInc);
+% [ EM_coarse_t ] = EdgeMap3D(EM,round(k_factor*k),freq_factor*medfreq,filter,angleInc);
+% 
+% filter = filtercreation(freq_factor*medfreq,round(k_factor*k_factor*k),angleInc);
+% [ EM_coarse ] = EdgeMap3D(EM_coarse_t,round(k_factor*k_factor*k),freq_factor*medfreq,filter,angleInc);
 
 %%
 
@@ -83,19 +83,22 @@ Quantized_EM = imfill(Quantized_EM);
 bw_image=(Quantized_EM==border);
 SE=strel('disk',1,0);
 bw_eroded=imerode(bw_image,SE);
-cc=bwconncomp(bw_eroded);
-for j=1:cc.NumObjects
-    reg_size(j)=numel(cc.PixelIdxList{j}); 
-end
-list=find(gt(reg_size/sum(reg_size),per_limit));
-while or(isempty(list),lt(per_limit,0.01))
-    per_limit=per_limit/2;
-    list=find(gt(reg_size/sum(reg_size),per_limit));
-end
-im_border=zeros(size(Quantized_EM));
-for j=1:numel(list)
-    im_border(cc.PixelIdxList{list(j)})=1; 
-end
+bw_open=bwareaopen(bw_eroded,ceil(sum(bw_eroded(:))*per_limit));
+im_border=imdilate(bw_open,SE);
+
+% cc=bwconncomp(bw_eroded);
+% for j=1:cc.NumObjects
+%     reg_size(j)=numel(cc.PixelIdxList{j}); 
+% end
+% list=find(gt(reg_size/sum(reg_size),per_limit));
+% while or(isempty(list),lt(per_limit,0.01))
+%     per_limit=per_limit/2;
+%     list=find(gt(reg_size/sum(reg_size),per_limit));
+% end
+% im_border=zeros(size(Quantized_EM));
+% for j=1:numel(list)
+%     im_border(cc.PixelIdxList{list(j)})=1; 
+% end
 
 % Join the obtained borders with the chest contour
 im_border_joint=or(im_border,chest_contour);

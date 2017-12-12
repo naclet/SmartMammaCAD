@@ -22,16 +22,16 @@ mean_img = squeeze(stp_reduced(1,:,:,:));%squeeze(mean(stp_reduced));%
 %[~, mask]=get_mask(stp_reduced);
 
 %filter image to remove noise
-filt_img=medfilt3(mean_img);
+%filt_img=medfilt3(mean_img);
 
 %get the segmentation mask 
-k = 7 ;
-medfreq=1.4;
+k = 12 ;
+medfreq=1.6;
 border=3;
 proportion=0.2;
 dil_size=8;
 angleInc=3;
-[segmented_mask] = SegmentBreast3D( filt_img , k , medfreq , border, proportion , dil_size ,angleInc);
+[segmented_mask] = SegmentBreast3D( mean_img , k , medfreq , border, proportion , dil_size ,angleInc);
 
 %plot results
 bmp_stack(mean_img);

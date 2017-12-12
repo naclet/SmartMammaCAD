@@ -51,13 +51,13 @@ function [im_filt,u,v,w] = ...
     v=zeros(size(im)); 
     w=zeros(size(im));     
     
-   f = images.internal.createGaussianKernel([gradientsigma gradientsigma gradientsigma],3*[sze_g sze_g sze_g]); %
-    Gxx=imfilter(Gx.*Gx,f);
-    Gxy=imfilter(Gx.*Gy,f);
-    Gxz=imfilter(Gx.*Gz,f);
-    Gyy=imfilter(Gy.*Gy,f);
-    Gyz=imfilter(Gy.*Gz,f);
-    Gzz=imfilter(Gz.*Gz,f);
+    blocksigma=3;
+    Gxx=imgaussfilter3(Gx.*Gx,blocksigma);
+    Gxy=imgaussfilter3(Gx.*Gy,blocksigma);
+    Gxz=imgaussfilter3(Gx.*Gz,blocksigma);
+    Gyy=imgaussfilter3(Gy.*Gy,blocksigma);
+    Gyz=imgaussfilter3(Gy.*Gz,blocksigma);
+    Gzz=imgaussfilter3(Gz.*Gz,blocksigma);
     
     
     for i=1:X
@@ -70,17 +70,39 @@ function [im_filt,u,v,w] = ...
                 v(i,j,k) = vect_orient(2);
                 w(i,j,k) = vect_orient(3);
                 
-                % filtering
-                vect3D=vect_orient(1)*x./max(x(:))+vect_orient(2)*y./max(y(:))+vect_orient(3)*z./max(z(:));
-%                gaussian = exp(-((vect_orient(1)*x+vect_orient(2)*y+vect_orient(3)*z).^2/sigmax^2)/2 );
-                im_filt(i,j,k)=vector_filter(im_ext(i:i+2*sze,j:j+2*sze,k:k+2*sze),gaussian,vect3D,unfreq);
+
+
                 
             end
         end
         fprintf('.')
     end
+    uxx=imgaussfilter3(u.*u,blocksigma);
+    uxy=imgaussfilter3(u.*v,blocksigma);
+    uxz=imgaussfilter3(u.*w,blocksigma);
+    uyy=imgaussfilter3(v.*v,blocksigma);
+    uyz=imgaussfilter3(v.*w,blocksigma);
+    uzz=imgaussfilter3(w.*w,blocksigma);  
     
-    
+    for i=1:X
+        for j=1:Y
+            for k=1:Z
+                
+                % Vector calculation
+                vect_orient = average_moment(uxx(i,j,k),uxy(i,j,k),uxz(i,j,k),uyy(i,j,k),uyz(i,j,k),uzz(i,j,k));
+                u(i,j,k) = vect_orient(1);
+                v(i,j,k) = vect_orient(2);
+                w(i,j,k) = vect_orient(3); 
+                                % filtering  % 
+                alpha_phase=0;
+                vect3D=u(i,j,k)*x./max(x(:))+v(i,j,k)*y./max(y(:))+w(i,j,k)*z./max(z(:));
+                GaborFilter=gaussian.*(cos(1*2*pi*unfreq*vect3D+alpha_phase));
+                im_filt(i,j,k)= sum(sum(sum(im_ext(i:i+2*sze,j:j+2*sze,k:k+2*sze).*GaborFilter)));
+             end
+        end
+        fprintf('.')
+    end
+   
 end
 
     function vect_orient=average_moment(Gxx,Gxy,Gxz,Gyy,Gyz,Gzz)
@@ -98,6 +120,6 @@ end
     
 %    unfreq=0.05;
     alpha_phase=0;
-   im_filt=sum(sum(sum(im.*gaussian.*(exp(i*2*pi*unfreq*vect+alpha_phase)))));
+   im_filt=sum(sum(sum(im.*gaussian.*(exp(li*2*pi*unfreq*vect+alpha_phase)))));
   
     end

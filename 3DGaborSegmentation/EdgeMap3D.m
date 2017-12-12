@@ -19,7 +19,7 @@ function [ newim ] = EdgeMap3D(im,k,medfreq,filter,angleInc)
     gradientsigma=1; 
     blocksigma=round(size(im,1)/40); % This is a good trade-off between computation time and accuracy. Changes in here may not have a dramatic effect.
    
-    [orientim1, orientim2] = ridgeorient3D(normim,gradientsigma, blocksigma, blocksigma);
+    [orientim1, orientim2] = ridgeorient3D(normim,gradientsigma, blocksigma, 3*blocksigma);
     
     fprintf('Orientation maps extracted!\n')    
     

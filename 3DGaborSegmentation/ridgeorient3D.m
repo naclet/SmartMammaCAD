@@ -58,11 +58,13 @@ function [orientim] = ...
     cos2theta = (Gxx-Gyy)./denom;
 
     if orientsmoothsigma
-        sze = fix(6*orientsmoothsigma);   if ~mod(sze,2); sze = sze+1; end    
+        %sze = fix(6*orientsmoothsigma);   if ~mod(sze,2); sze = sze+1; end    
 
-        f = images.internal.createGaussianKernel([orientsmoothsigma orientsmoothsigma orientsmoothsigma], [sze sze sze]);
-        cos2theta=imfilter(cos2theta, f);fprintf('.')
-        sin2theta=imfilter(sin2theta, f);      fprintf('.')     
+        %f = images.internal.createGaussianKernel([orientsmoothsigma orientsmoothsigma orientsmoothsigma], [sze sze sze]);
+        %cos2theta=imfilter(cos2theta, f);fprintf('.')
+        %sin2theta=imfilter(sin2theta, f);      fprintf('.')   
+        cos2theta=imgaussfilt3(cos2theta, orientsmoothsigma);fprintf('.')
+        sin2theta=imgaussfilt3(sin2theta,orientsmoothsigma );      fprintf('.')   
     end
    
     
