@@ -1,27 +1,23 @@
-function [y,x,reduced_mask]=create_ROImask(imgnii, xmlfile, imgcoarse)
+function [big_mask,x,reduced_mask,reduced_img]=create_ROImask(imgnii, xmlfile, imgcoarse)
 
 stacki2=double(imgnii.img);
 
-[x, masdeunaroi]=extract_ROI('.',xmlfile);
+x=extract_ROI('.',xmlfile);
 fprintf 'Point coordinates extracted\n'
 
-y=zeros(size(stacki2));
+big_mask=zeros(size(stacki2));
 list=find(x(1,1,:));
-
-if masdeunaroi
-    fprintf('CUIDAO, hay mas de una roi!')
-end
-
+[N, M]=size(squeeze(big_mask(:,1,:)));
 for i=list(1):list(end)
-    [N M]=size(squeeze(y(i,:,:)));
-    mask=points2bw( x(x(:,1,i)>0,:,i),N,M);
-    y(i,:,:)=mask;
+    ncc=bwconncomp(x(:,1,i)>0);
+    for j=1:ncc.NumObjects
+        mask=points2bw(x(ncc.PixelIdxList{j},:,i),N,M);
+        big_mask(:,size(stacki2,2)-i,:)=squeeze(big_mask(:,size(stacki2,2)-i,:))+mask;
+    end
 end
-% if you want to have it like the nii (not the dicom)
-y=flipdim(permute(y,[2 1 3]),2);
 
 
-reduced_mask=resize_delineatedcontour(imgnii,imgcoarse,y);
+[reduced_mask,reduced_img]=resize_delineatedcontour(imgnii,imgcoarse,big_mask);
 
 fprintf('completed!\n')
 end
