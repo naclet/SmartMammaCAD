@@ -1,5 +1,26 @@
-# SmartMammaCAD
-Software tools for Computer Aided Diagnosis of Breast Cancer
+# 3D Gabor Segmentator
+Segmentation tool based on 3D Gabor filtering. It was developed to segment the whole breast in DCE-MRI images.
+Please cite:
+@InProceedings{10.1007/978-3-319-92639-1_37,
+author="Illan, I. A.
+and Matos, J. Perez
+and Ramirez, J.
+and Gorriz, J. M.
+and Foo, S.
+and Meyer-Baese, A.",
+title="3D Gabor Filters for Chest Segmentation in DCE-MRI",
+booktitle="Hybrid Artificial Intelligent Systems",
+year="2018",
+pages="446--454",
+}
+
+
+# Run
+
+Use the following parameters to run on Example2:
+
+>> load Example2
+>> [segmented_mask] = SegmentBreast3D( mean_img , 12 , 1.6 , 3, 0.4 , 8 ,3);
 
 # License
 
